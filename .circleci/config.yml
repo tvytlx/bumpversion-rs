@@ -5,4 +5,5 @@ jobs:
       - image: circleci/rust:latest
     steps:
       - checkout
-      - run: cargo test
+      - run: git config --global user.email "you@example.com" && git config --global user.name "Your Name"
+      - run: cargo test -- --nocapture
