@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::fs;
 use std::iter::FromIterator;
+mod vcs;
 
 fn next_version(config: &HashMap<String, String>, part: &String) -> String {
     let mut version = parse_version(config.get("current_version").unwrap().to_string())
