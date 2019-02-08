@@ -128,16 +128,7 @@ fn main() {
 
 #[cfg(test)]
 mod test {
-    use super::bump;
-    use super::ini;
     use super::parse_version;
-
-    #[test]
-    fn test_parse() {
-        let config_file = ".setup.cfg";
-        let config = ini::Ini::load_from_file(config_file).unwrap();
-        bump(config, &"major".to_string());
-    }
 
     #[test]
     fn test_parse_version() {
