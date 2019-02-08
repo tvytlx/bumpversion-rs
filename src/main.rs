@@ -54,7 +54,7 @@ fn parse_version(version: String) -> Option<Box<SemanticVersion>> {
     }))
 }
 
-fn bump(ini_config: ini::Ini, part: &String) {
+fn bump(ini_config: ini::Ini, part: &String, config_file_name: &str) {
     // get the bumpversion config
     let config = ini_config.section(Some("bumpversion".to_owned())).unwrap();
 
@@ -68,6 +68,7 @@ fn bump(ini_config: ini::Ini, part: &String) {
             .split(",")
             .map(|item| item.trim()),
     );
+    files.push(config_file_name);
     files.sort();
     files.dedup();
 
@@ -123,7 +124,7 @@ fn main() {
     let part = matches.value_of("part").unwrap();
 
     let config = ini::Ini::load_from_file(config_file).unwrap();
-    bump(config, &part.to_string());
+    bump(config, &part.to_string(), config_file);
 }
 
 #[cfg(test)]
