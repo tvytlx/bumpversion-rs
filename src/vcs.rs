@@ -1,12 +1,12 @@
 use subprocess::{Popen, PopenConfig, PopenError, Redirection};
 
-pub fn commit(files: &Vec<&str>, message: String) {
+pub fn commit(files: &Vec<&str>, message: &str) {
     let mut commands = vec!["git", "add"];
     for file in files.into_iter() {
         commands.push(file);
     }
     command(&commands).unwrap();
-    commands = vec!["git", "commit", "-m", message.as_str()];
+    commands = vec!["git", "commit", "-m", message];
     command(&commands).unwrap();
 }
 
@@ -48,7 +48,7 @@ mod test {
                 eprintln!("Couldn't write to file: {}", e);
             }
         }
-        commit(&files, "fuck".to_string());
+        commit(&files, "fuck");
         let out = command(&vec!["git", "--no-pager", "log", "-n1"])
             .unwrap()
             .unwrap();

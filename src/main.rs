@@ -1,12 +1,11 @@
 use clap::{App, Arg};
 use ini;
 use std::collections::HashMap;
-use std::collections::HashSet;
 use std::fs;
 use std::iter::FromIterator;
 mod vcs;
 
-fn next_version(config: &HashMap<String, String>, part: &String) -> String {
+fn generate_next_version(config: &HashMap<String, String>, part: &String) -> String {
     let mut version = parse_version(config.get("current_version").unwrap().to_string())
         .take()
         .unwrap();
@@ -61,13 +60,16 @@ fn bump(ini_config: ini::Ini, part: &String) {
 
     // get config
     let current_version = config.get("current_version").unwrap();
-    let files = HashSet::<&str>::from_iter(
+    let next_version = generate_next_version(config, &part);
+    let mut files = Vec::<&str>::from_iter(
         config
             .get("files")
             .unwrap()
             .split(",")
             .map(|item| item.trim()),
     );
+    files.sort();
+    files.dedup();
 
     // update files
     for file in &files {
@@ -78,7 +80,7 @@ fn bump(ini_config: ini::Ini, part: &String) {
                 .lines()
                 .map(|line| {
                     if line.contains(current_version) {
-                        line.replace(current_version, next_version(config, &part).as_str())
+                        line.replace(current_version, next_version.as_str())
                     } else {
                         line.to_string()
                     }
@@ -87,6 +89,13 @@ fn bump(ini_config: ini::Ini, part: &String) {
                 .join("\n"),
         )
         .expect("write file error!");
+    }
+
+    // git
+    if config.get("commit").unwrap() == "True" {
+        // TODO: custom commit message
+        let commit_message = format!("Bumpversion {} -> {}", current_version, next_version);
+        vcs::commit(&files, &commit_message);
     }
 }
 
