@@ -77,7 +77,7 @@ fn bump(ini_config: ini::Ini, part: &String) {
             file,
             fs::read_to_string(file)
                 .unwrap()
-                .lines()
+                .split("\n")
                 .map(|line| {
                     if line.contains(current_version) {
                         line.replace(current_version, next_version.as_str())
